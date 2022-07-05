@@ -128,7 +128,12 @@ export default class ImageGallery extends Component {
         <>
           <ul className={s.gallery}>
             {images?.map(image => (
-              <li key={image.id}>
+              <li
+                key={image.id}
+                id={image.id}
+                onClick={this.handleImageClick}
+                className={s.galleryItem}
+              >
                 <ImageGalleryItem url={image.webformatURL} alt={image.tags} />
               </li>
             ))}
