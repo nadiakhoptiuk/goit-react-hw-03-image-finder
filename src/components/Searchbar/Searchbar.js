@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-
 import SearchForm from 'components/SearchForm';
 import s from './Searchbar.module.css';
 

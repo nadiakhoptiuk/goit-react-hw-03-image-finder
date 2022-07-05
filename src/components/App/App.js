@@ -17,12 +17,6 @@ export default class App extends Component {
     this.toggleModal();
   };
 
-  onBackdropClose = evt => {
-    if (evt.target === evt.currentTarget) {
-      this.toggleModal();
-    }
-  };
-
   toggleModal = () => {
     this.setState(({ showModal }) => ({ showModal: !showModal }));
   };
@@ -42,10 +36,7 @@ export default class App extends Component {
           </Section>
         </main>
         {showModal && (
-          <Modal
-            onEscClose={this.toggleModal}
-            onBackdropClose={this.onBackdropClose}
-          >
+          <Modal onModalClose={this.toggleModal}>
             <img
               className={s.modalImage}
               src={openedImage.largeImageURL}

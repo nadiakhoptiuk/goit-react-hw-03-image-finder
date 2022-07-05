@@ -75,7 +75,6 @@ export default class ImageGallery extends Component {
     const selectedImage = images.find(
       image => image.id === Number(evt.currentTarget.id)
     );
-    console.log(selectedImage);
     onImageClick(selectedImage);
   };
 
@@ -146,5 +145,6 @@ export default class ImageGallery extends Component {
 
   static propTypes = {
     searchPhrase: PropTypes.string,
+    onImageClick: PropTypes.func.isRequired,
   };
 }
