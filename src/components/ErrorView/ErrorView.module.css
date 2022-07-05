@@ -1,0 +1,7 @@
+.errorMessage {
+  margin: 0 auto;
+
+  font-family: inherit;
+  font-size: 15px;
+  color: grey;
+}
