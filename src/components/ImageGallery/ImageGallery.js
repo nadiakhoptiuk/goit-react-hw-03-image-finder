@@ -68,6 +68,17 @@ export default class ImageGallery extends Component {
     this.setState({ images: [...images, ...newImages] });
   };
 
+  handleImageClick = evt => {
+    const { images } = this.state;
+    const { onImageClick } = this.props;
+
+    const selectedImage = images.find(
+      image => image.id === Number(evt.currentTarget.id)
+    );
+    console.log(selectedImage);
+    onImageClick(selectedImage);
+  };
+
   componentDidMount() {
     this.setState({ status: STATUS_OPTIONS.IDLE });
   }
@@ -93,7 +104,12 @@ export default class ImageGallery extends Component {
         <>
           <ul className={s.gallery}>
             {images.map(image => (
-              <li key={image.id}>
+              <li
+                key={image.id}
+                id={image.id}
+                onClick={this.handleImageClick}
+                className={s.galleryItem}
+              >
                 <ImageGalleryItem url={image.webformatURL} alt={image.tags} />
               </li>
             ))}
