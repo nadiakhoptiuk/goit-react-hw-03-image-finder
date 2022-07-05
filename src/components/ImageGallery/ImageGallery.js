@@ -30,13 +30,15 @@ const searchParams = (value, page) =>
   });
 
 export default class ImageGallery extends Component {
-  state = { status: 'idle', images: [] };
+  state = { status: 'idle', images: [], countOfPages: null };
 
   fetchImages = async (searchPhrase, page) => {
     const res = await fetch(`${API_URL}?&${searchParams(searchPhrase, page)}`);
     const parsedRes = await res.json();
     const arrayOfImages = await parsedRes.hits;
-
+    const totalImages = await parsedRes.totalHits;
+    const countOfPages = Math.ceil(totalImages / PER_PAGE);
+    this.setState({ countOfPages: countOfPages });
     return arrayOfImages;
   };
 
@@ -74,7 +76,7 @@ export default class ImageGallery extends Component {
     const { searchPhrase } = this.props;
 
     if (prevProps.searchPhrase !== searchPhrase) {
-      this.setState({ status: STATUS_OPTIONS.PENDING });
+      this.setState({ status: STATUS_OPTIONS.PENDING, images: [] });
 
       PAGE = 1;
       const result = await this.fetchImages(searchPhrase, PAGE);
@@ -84,7 +86,7 @@ export default class ImageGallery extends Component {
   }
 
   render() {
-    const { status, images } = this.state;
+    const { status, images, countOfPages } = this.state;
 
     if (status === 'resolved') {
       return (
@@ -96,16 +98,29 @@ export default class ImageGallery extends Component {
               </li>
             ))}
           </ul>
-          <Button
-            title="Load more"
-            onLoadMoreClick={this.handleLoadMoreClick}
-          ></Button>
+          {countOfPages > PAGE ? (
+            <Button
+              title="Load more"
+              onLoadMoreClick={this.handleLoadMoreClick}
+            ></Button>
+          ) : null}
         </>
       );
     }
 
     if (status === 'pending') {
-      return <PendingView />;
+      return (
+        <>
+          <ul className={s.gallery}>
+            {images?.map(image => (
+              <li key={image.id}>
+                <ImageGalleryItem url={image.webformatURL} alt={image.tags} />
+              </li>
+            ))}
+          </ul>
+          <PendingView />
+        </>
+      );
     }
 
     if (status === 'rejected') {
