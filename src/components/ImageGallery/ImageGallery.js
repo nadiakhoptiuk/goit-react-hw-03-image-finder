@@ -36,19 +36,17 @@ export default class ImageGallery extends Component {
     const res = await fetch(`${API_URL}?&${searchParams(searchPhrase, page)}`);
     const parsedRes = await res.json();
     const arrayOfImages = await parsedRes.hits;
-    const totalImages = await parsedRes.totalHits;
-    const countOfPages = Math.ceil(totalImages / PER_PAGE);
-    this.setState({ countOfPages: countOfPages });
+
+    if (arrayOfImages.length === 0) {
+      throw new Error();
+    }
+    this.setCountOfImages(parsedRes);
     return arrayOfImages;
   };
 
   handleFetchResult = result => {
-    if (result.length === 0) {
-      this.setState({ status: STATUS_OPTIONS.REJECTED });
-      return;
-    }
-
     this.setState({ status: STATUS_OPTIONS.RESOLVED });
+
     const newImages = result.map(
       ({ id, webformatURL, largeImageURL, tags }) => {
         return { id, webformatURL, largeImageURL, tags };
@@ -63,6 +61,7 @@ export default class ImageGallery extends Component {
     const { images } = this.state;
 
     this.setState({ status: STATUS_OPTIONS.PENDING });
+
     const result = await this.fetchImages(searchPhrase, PAGE);
     const newImages = this.handleFetchResult(result);
     this.setState({ images: [...images, ...newImages] });
@@ -78,6 +77,16 @@ export default class ImageGallery extends Component {
     onImageClick(selectedImage);
   };
 
+  setCountOfImages = data => {
+    const totalImages = data.totalHits;
+    const countOfPages = Math.ceil(totalImages / PER_PAGE);
+    this.setState({ countOfPages: countOfPages });
+  };
+
+  resetCountOfImages = () => {
+    this.setState({ countOfPages: null });
+  };
+
   componentDidMount() {
     this.setState({ status: STATUS_OPTIONS.IDLE });
   }
@@ -87,11 +96,16 @@ export default class ImageGallery extends Component {
 
     if (prevProps.searchPhrase !== searchPhrase) {
       this.setState({ status: STATUS_OPTIONS.PENDING, images: [] });
-
       PAGE = 1;
-      const result = await this.fetchImages(searchPhrase, PAGE);
-      const newImages = this.handleFetchResult(result);
-      this.setState({ images: newImages });
+
+      try {
+        const result = await this.fetchImages(searchPhrase, PAGE);
+        const newImages = this.handleFetchResult(result);
+        this.setState({ images: newImages });
+      } catch (error) {
+        this.setState({ status: STATUS_OPTIONS.REJECTED });
+        this.resetCountOfImages();
+      }
     }
   }
 
