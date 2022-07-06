@@ -115,54 +115,32 @@ export default class ImageGallery extends Component {
   render() {
     const { status, images, countOfPages } = this.state;
 
-    if (status === 'resolved') {
-      return (
-        <>
-          <ul className={s.gallery}>
-            {images.map(image => (
-              <li
-                key={image.id}
-                id={image.id}
-                onClick={this.handleImageClick}
-                className={s.galleryItem}
-              >
-                <ImageGalleryItem url={image.webformatURL} alt={image.tags} />
-              </li>
-            ))}
-          </ul>
-          {countOfPages > PAGE ? (
-            <Button
-              title="Load more"
-              onLoadMoreClick={this.handleLoadMoreClick}
-            ></Button>
-          ) : null}
-        </>
-      );
-    }
+    return (
+      <>
+        <ul className={s.gallery}>
+          {images?.map(image => (
+            <li
+              key={image.id}
+              id={image.id}
+              onClick={this.handleImageClick}
+              className={s.galleryItem}
+            >
+              <ImageGalleryItem url={image.webformatURL} alt={image.tags} />
+            </li>
+          ))}
+        </ul>
 
-    if (status === 'pending') {
-      return (
-        <>
-          <ul className={s.gallery}>
-            {images?.map(image => (
-              <li
-                key={image.id}
-                id={image.id}
-                onClick={this.handleImageClick}
-                className={s.galleryItem}
-              >
-                <ImageGalleryItem url={image.webformatURL} alt={image.tags} />
-              </li>
-            ))}
-          </ul>
-          <PendingView />
-        </>
-      );
-    }
+        {status === 'resolved' && countOfPages > PAGE ? (
+          <Button
+            title="Load more"
+            onLoadMoreClick={this.handleLoadMoreClick}
+          ></Button>
+        ) : null}
 
-    if (status === 'rejected') {
-      return <ErrorView />;
-    }
+        {status === 'pending' && <PendingView />}
+        {status === 'rejected' && <ErrorView />}
+      </>
+    );
   }
 
   static propTypes = {
