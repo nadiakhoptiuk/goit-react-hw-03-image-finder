@@ -33,6 +33,10 @@ export default class ImageGallery extends Component {
   state = { status: 'idle', images: [], countOfPages: null };
 
   fetchImages = async (searchPhrase, page) => {
+    if (searchPhrase === '') {
+      throw new Error();
+    }
+
     const res = await fetch(`${API_URL}?&${searchParams(searchPhrase, page)}`);
     const parsedRes = await res.json();
     const arrayOfImages = await parsedRes.hits;
@@ -40,7 +44,7 @@ export default class ImageGallery extends Component {
     if (arrayOfImages.length === 0) {
       throw new Error();
     }
-    this.setCountOfImages(parsedRes);
+    this.setCountOfPages(parsedRes);
     return arrayOfImages;
   };
 
@@ -61,7 +65,6 @@ export default class ImageGallery extends Component {
     const { images } = this.state;
 
     this.setState({ status: STATUS_OPTIONS.PENDING });
-
     const result = await this.fetchImages(searchPhrase, PAGE);
     const newImages = this.handleFetchResult(result);
     this.setState({ images: [...images, ...newImages] });
@@ -77,13 +80,13 @@ export default class ImageGallery extends Component {
     onImageClick(selectedImage);
   };
 
-  setCountOfImages = data => {
+  setCountOfPages = data => {
     const totalImages = data.totalHits;
     const countOfPages = Math.ceil(totalImages / PER_PAGE);
     this.setState({ countOfPages: countOfPages });
   };
 
-  resetCountOfImages = () => {
+  resetCountOfPages = () => {
     this.setState({ countOfPages: null });
   };
 
@@ -104,7 +107,7 @@ export default class ImageGallery extends Component {
         this.setState({ images: newImages });
       } catch (error) {
         this.setState({ status: STATUS_OPTIONS.REJECTED });
-        this.resetCountOfImages();
+        this.resetCountOfPages();
       }
     }
   }

@@ -9,7 +9,7 @@ export default class App extends Component {
   state = { searchPhrase: '', showModal: false, openedImage: {} };
 
   handleFormSubmit = enteredPhrase => {
-    this.setState({ searchPhrase: enteredPhrase });
+    this.setState({ searchPhrase: enteredPhrase.trim() });
   };
 
   createModal = selectedImage => {
