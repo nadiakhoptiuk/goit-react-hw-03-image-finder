@@ -20,10 +20,12 @@ export default class Modal extends Component {
 
   componentDidMount() {
     window.addEventListener('keydown', this.handleKeyDown);
+    document.body.classList.add('modal-is-open');
   }
 
   componentWillUnmount() {
     window.removeEventListener('keydown', this.handleKeyDown);
+    document.body.classList.remove('modal-is-open');
   }
 
   render() {
